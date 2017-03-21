@@ -20,8 +20,6 @@ public class Main extends JavaPlugin implements Listener {
 	ArrayList<UUID> flame = new ArrayList<UUID>();
 	ArrayList<UUID> water = new ArrayList<UUID>();
 	
-	//Can you see this?
-	
 	public void onEnable(){
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
 		
@@ -30,6 +28,10 @@ public class Main extends JavaPlugin implements Listener {
         config.options().copyDefaults(true);
         saveConfig();
 	}
+	
+	
+	//TODO CREATE INVENTORY FOR THIS,WATCH VIDEO ON COMPLEX PARTICLES,ADD THESE TO INVENTORY
+	
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command,
