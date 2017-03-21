@@ -1,0 +1,14 @@
+name: RaizEffects
+main: zain.drozal.effects.Main
+version: 0.9.0
+description: A effect plugin.
+author: Raizer
+commands:
+ flame:
+  description: Put on flame.
+ flameoff:
+  description: Put off flame.
+ watereff:
+  description: Put on water.
+ wateroff:
+  description: Put off water.
