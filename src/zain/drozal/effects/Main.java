@@ -20,6 +20,8 @@ public class Main extends JavaPlugin implements Listener {
 	ArrayList<UUID> flame = new ArrayList<UUID>();
 	ArrayList<UUID> water = new ArrayList<UUID>();
 	
+	//Can you see this?
+	
 	public void onEnable(){
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
 		
