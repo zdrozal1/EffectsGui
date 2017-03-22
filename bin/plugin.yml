@@ -4,11 +4,9 @@ version: 0.9.0
 description: A effect plugin.
 author: Raizer
 commands:
- flame:
-  description: Put on flame.
- flameoff:
-  description: Put off flame.
- watereff:
-  description: Put on water.
+ effectgui:
+  description: Put on flame effect.
+ water:
+  description: Put on water effect.
  wateroff:
-  description: Put off water.
+  description: Put off water effect.

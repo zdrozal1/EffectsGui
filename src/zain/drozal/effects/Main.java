@@ -7,24 +7,55 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin implements Listener {
+	Inventory inv = Bukkit.createInventory(null, 9, ChatColor.AQUA+"EffectGui");
+	
+	// Flame On
+    ItemStack flameon = new ItemStack(Material.FLINT_AND_STEEL); {
+        ItemMeta flameonmeta = flameon.getItemMeta();
+        flameonmeta.setDisplayName(ChatColor.GREEN+"Enable Flame Effect");
+        flameonmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        ArrayList<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY+"Turn on fire effect");
+        flameonmeta.setLore(lore);
+        flameon.setItemMeta(flameonmeta);
+        inv.setItem(0, flameon);
+    }
+    
+	// Flame off
+    ItemStack flameoff = new ItemStack(Material.REDSTONE_BLOCK); {
+        ItemMeta flameoffmeta = flameoff.getItemMeta();
+        flameoffmeta.setDisplayName(ChatColor.RED+"Disable Flame Effect");
+        flameoffmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        ArrayList<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY+"Turn off fire effect");
+        flameoffmeta.setLore(lore);
+        flameoff.setItemMeta(flameoffmeta);
+        inv.setItem(1, flameoff);
+    }
+	
 	ArrayList<UUID> flame = new ArrayList<UUID>();
 	ArrayList<UUID> water = new ArrayList<UUID>();
 	
 	public void onEnable(){
 		Bukkit.getServer().getPluginManager().registerEvents(this, this);
-		
 		final FileConfiguration config = this.getConfig();
-
         config.options().copyDefaults(true);
         saveConfig();
 	}
@@ -32,48 +63,61 @@ public class Main extends JavaPlugin implements Listener {
 	
 	//TODO CREATE INVENTORY FOR THIS,WATCH VIDEO ON COMPLEX PARTICLES,ADD THESE TO INVENTORY
 	
+	@EventHandler
+	public void onClick(InventoryClickEvent e){
+		Inventory inv = e.getInventory();
+		Player p = (Player) e.getWhoClicked();
+		if(inv.getName().equals(ChatColor.AQUA+"EffectGui")){
+		
+			if(e.getSlot() == 0){
+				PacketUtils.sendTitle(p, ChatColor.RED+"Flame Effect", "Has Been Enabled", 1, 2, 1);
+				flame.add(p.getUniqueId());
+				getConfig().set(p.getName()+"'s Flame.enabled", "yes");
+				saveConfig();
+				p.closeInventory();
+				e.setCancelled(true);
+			}
+			
+			if(e.getSlot() == 1){
+				PacketUtils.sendTitle(p, ChatColor.RED+"Flame Effect", "Has Been Disabled", 1, 2, 1);
+				flame.remove(p.getUniqueId());
+				getConfig().set(p.getName()+"'s Flame.enabled", "no");
+				saveConfig();
+				p.closeInventory();
+				e.setCancelled(true);
+			}
+		
+		}
+}
+	
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command,
-			String label, String[] args) {
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		String cmd = command.getName();
 		Player p = (Player) sender;
 
-		if (cmd.equalsIgnoreCase("flame")) {
-			p.sendMessage("on");
-			PacketUtils.sendTitle(p, ChatColor.RED+"Flame Effect", ChatColor.BOLD+"Has Been Enabled", 1, 2, 1);
-			flame.add(p.getUniqueId());
-			getConfig().set(p.getName()+"'s Flame.enabled", "yes");
-			saveConfig();
+		if (cmd.equalsIgnoreCase("effectgui")) {
+			p.sendMessage(ChatColor.ITALIC+"Opened EffectsMenu");
+			p.openInventory(inv);
 	}
 		
-		if (cmd.equalsIgnoreCase("watereff")) {
-			p.sendMessage("on");
-			PacketUtils.sendTitle(p, ChatColor.AQUA+"Water Effect", ChatColor.BOLD+"Has Been Enabled", 1, 2, 1);
+		if (cmd.equalsIgnoreCase("water")) {
+			PacketUtils.sendTitle(p, ChatColor.AQUA+"Water Effect", "Has Been Enabled", 1, 2, 1);
 			water.add(p.getUniqueId());
 			getConfig().set(p.getName()+"'s water.enabled", "yes");
 			saveConfig();
 	}
 		
 		if (cmd.equalsIgnoreCase("wateroff")) {
-			p.sendMessage("off");
-			PacketUtils.sendTitle(p, ChatColor.AQUA+"Water Effect", ChatColor.BOLD+"Has Been Disabled", 1, 2, 1);
+			PacketUtils.sendTitle(p, ChatColor.AQUA+"Water Effect", "Has Been Disabled", 1, 2, 1);
 			water.remove(p.getUniqueId());
 			getConfig().set(p.getName()+"'s water.enabled", "no");
 			saveConfig();
 		}
-		
-		if (cmd.equalsIgnoreCase("flameoff")) {
-			p.sendMessage("off");
-			PacketUtils.sendTitle(p, ChatColor.RED+"Flame Effect", ChatColor.BOLD+"Has Been Disabled", 1, 2, 1);
-			flame.remove(p.getUniqueId());
-			getConfig().set(p.getName()+"'s Flame.enabled", "no");
-			saveConfig();
-		}
 		return false;
-		
+
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPMove(PlayerMoveEvent e){
